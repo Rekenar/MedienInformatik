@@ -56,7 +56,7 @@ public class PSNRCalculator {
         double mse = MSE(original, decoded);
 
 
-        double psnr = (20 * Math.log10(255))-(10 * Math.log10(mse));
+        double psnr = (20 * Math.log10(MAX))-(10 * Math.log10(mse));
         return psnr;
     }
 

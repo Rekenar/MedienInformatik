@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SubPixelMotionEstimation">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/SubPixelMotionEstimation.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
