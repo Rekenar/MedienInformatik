@@ -1,8 +1,12 @@
 package at.aau.emmt;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -22,7 +26,9 @@ public class SubPixelMotionVector {
                 {8, 2, 3, 3}
         };
 
-        int[][] test = interpolateFrame(matrix);
+
+
+        int[][] test = interpolateFrame(generate2DArray(30, 30, 1, 255));
         System.out.println(matrixToString(matrix));
         System.out.println(matrixToString(test));
 
@@ -30,10 +36,13 @@ public class SubPixelMotionVector {
         /**
          * Use this code if you want to see the result as image. You can also use the test.png image for testing.
          */
-        /*int[][] r_frame = getLumincanceChannel("image-0096.png");
+        int[][] r_frame = getLumincanceChannel("image-0096.png");
         int[][] t_frame = getLumincanceChannel("image-0097.png");
 
         int[][] r_frame_sub = interpolateFrame(r_frame);
+
+        writeArrayToFile("r_frame.txt",r_frame);
+        writeArrayToFile("r_frame_sub.txt",r_frame_sub);
 
         BufferedImage img = new BufferedImage(r_frame_sub[0].length, r_frame_sub.length, BufferedImage.TYPE_INT_RGB);
         for (int col = 0; col < r_frame_sub[0].length; col++) {
@@ -47,7 +56,7 @@ public class SubPixelMotionVector {
         } catch (IOException e) {
             System.out.println("Could not save Image\n");
             System.exit(-1);
-        }*/
+        }
 
         // TODO Activate for Motion Vector Calculation
         /*searchMotionVector(r_frame, t_frame, 8, 32, 688, 688, 1);
@@ -71,6 +80,31 @@ public class SubPixelMotionVector {
         */
     }
 
+    public static int[][] generate2DArray(int rows, int cols, int minVal, int maxVal) {
+        Random rand = new Random();
+        int[][] array = new int[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                array[i][j] = rand.nextInt((maxVal - minVal) + 1) + minVal;
+            }
+        }
+        return array;
+    }
+
+    public static void writeArrayToFile(String fileName, int[][] array) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (int[] row : array) {
+                for (int value : row) {
+                    writer.write(Integer.toString(value));
+                    writer.write(" ");
+                }
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Interpolates a frame with quarter subpixel precision
      *
@@ -82,7 +116,13 @@ public class SubPixelMotionVector {
 
         //TODO Implement for HP1
         //create a larger copy of the image and copy existing pixels on the right places
-        int[][] new_frame = new int[0][0];
+        int[][] new_frame = new int[(r_frame.length-1) * 4+1][(r_frame[0].length-1) * 4+1];
+
+        for(int i = 0; i < r_frame.length; i++){
+            for(int j = 0; j < r_frame[i].length; j++){
+                new_frame[i*4][j*4] = r_frame[i][j];
+            }
+        }
 
         int[] tmp = {0, 0, 0, 0, 0, 0}; // E F G H I J or A C G M R T
 
@@ -90,24 +130,195 @@ public class SubPixelMotionVector {
         //calculate the horizontal half-pixels and place them correctly
         // you can use the existing filter for this task
 
+        for(int i = 0; i < new_frame.length; i = i + 4){
+            for(int j = 2; j < new_frame.length; j = j + 4){
+                if(j <= 2) {
+                    tmp[0] = new_frame[i][j - 2];
+                    tmp[1] = new_frame[i][j - 2];
+                    tmp[4] = new_frame[i][j + 6];
+                    tmp[5] = new_frame[i][j + 10];
+                }
+                else if(j <= 6){
+                    tmp[0] = new_frame[i][j-6];
+                    tmp[1] = new_frame[i][j-6];
+                    tmp[4] = new_frame[i][j+6];
+                    tmp[5] = new_frame[i][j+10];
+                }
+                else if (j <= new_frame.length - 2 && j > new_frame.length - 6) {
+                    tmp[0] = new_frame[i][j-10];
+                    tmp[1] = new_frame[i][j-6];
+                    tmp[4] = new_frame[i][j+6];
+                    tmp[5] = new_frame[i][j+10];
+                }
+                else if (j <= new_frame.length - 6 && j > new_frame.length - 10) {
+                    tmp[0] = new_frame[i][j-10];
+                    tmp[1] = new_frame[i][j-6];
+                    tmp[4] = new_frame[i][j+6];
+                    tmp[5] = new_frame[i][j+6];
+                }
+                else {
+                    tmp[0] = new_frame[i][j-10];
+                    tmp[1] = new_frame[i][j-6];
+                    tmp[4] = new_frame[i][j+6];
+                    tmp[5] = new_frame[i][j+10];
+                }
+
+                tmp[2] = new_frame[i][j-2];
+                tmp[3] = new_frame[i][j+2];
+
+                new_frame[i][j] =useFilter(tmp);
+            }
+        }
         //TODO Implement for HP3
         //calculate the vertical half-pixels and place them correctly
         // you can use the existing filter for this task
+
+        for(int i = 2; i < new_frame.length; i = i + 4){
+            for(int j = 0; j < new_frame[i].length; j = j + 4){
+                if(i <= 2) {
+                    tmp[0] = new_frame[i-2][j];
+                    tmp[1] = new_frame[i-2][j];
+                    tmp[4] = new_frame[i+6][j];
+                    tmp[5] = new_frame[i+6][j];
+                }
+                else if(i <= 6){
+                    tmp[0] = new_frame[i-6][j];
+                    tmp[1] = new_frame[i-6][j];
+                    tmp[4] = new_frame[i+6][j];
+                    tmp[5] = new_frame[i+10][j];
+                }
+                else if (i <= new_frame.length - 2 && i > new_frame.length - 6) {
+                    tmp[0] = new_frame[i-10][j];
+                    tmp[1] = new_frame[i-6][j];
+                    tmp[4] = new_frame[i+2][j];
+                    tmp[5] = new_frame[i+2][j];
+                }
+                else if (i <= new_frame.length - 6 && i > new_frame.length - 10) {
+                    tmp[0] = new_frame[i-10][j];
+                    tmp[1] = new_frame[i-6][j];
+                    tmp[4] = new_frame[i+6][j];
+                    tmp[5] = new_frame[i+6][j];
+                }
+                else {
+                    tmp[0] = new_frame[i-10][j];
+                    tmp[1] = new_frame[i-6][j];
+                    tmp[4] = new_frame[i+6][j];
+                    tmp[5] = new_frame[i+10][j];
+                }
+
+                tmp[2] = new_frame[i-2][j];
+                tmp[3] = new_frame[i+2][j];
+
+                new_frame[i][j] =useFilter(tmp);
+            }
+        }
+
+        /**for(int i = 0; i < new_frame.length; i = i + 4){
+            tmp[0] = new_frame[0][i];
+            tmp[1] = new_frame[0][i];
+            tmp[2] = new_frame[0][i];
+            tmp[3] = new_frame[4][i];
+            tmp[4] = new_frame[8][i];
+            tmp[5] = new_frame[12][i];
+            for(int j = 2; j < new_frame.length; j = j + 4){
+                new_frame[j][i] =useFilter(tmp);
+                for(int k = 0; k < tmp.length-1; k++){
+                    tmp[k] = tmp[k+1];
+                }
+            }
+        }**/
 
         //TODO Implement for HP4
         //interpolate the remaining ("diagonal") half-pixels via vertical OR horizontal method.
         // you can use the existing filter for this task
 
+        for(int i = 2; i < new_frame.length; i = i + 4){
+            for(int j = 2; j < new_frame.length; j = j + 4){
+                if(j <= 2) {
+                    tmp[0] = new_frame[i][j - 2];
+                    tmp[1] = new_frame[i][j - 2];
+                    tmp[4] = new_frame[i][j + 6];
+                    tmp[5] = new_frame[i][j + 10];
+                }
+                else if(j <= 6){
+                    tmp[0] = new_frame[i][j-6];
+                    tmp[1] = new_frame[i][j-6];
+                    tmp[4] = new_frame[i][j+6];
+                    tmp[5] = new_frame[i][j+10];
+                }
+                else if (j >= new_frame.length - 2) {
+                    tmp[0] = new_frame[i][j-10];
+                    tmp[1] = new_frame[i][j-6];
+                    tmp[4] = new_frame[i][j+6];
+                    tmp[5] = new_frame[i][j+10];
+                }
+                else if (j >= new_frame.length - 6) {
+                    tmp[0] = new_frame[i][j-10];
+                    tmp[1] = new_frame[i][j-6];
+                    tmp[4] = new_frame[i][j+6];
+                    tmp[5] = new_frame[i][j+6];
+                }
+                else {
+                    tmp[0] = new_frame[i][j-10];
+                    tmp[1] = new_frame[i][j-6];
+                    tmp[4] = new_frame[i][j+6];
+                    tmp[5] = new_frame[i][j+10];
+                }
+
+                tmp[2] = new_frame[i][j-2];
+                tmp[3] = new_frame[i][j+2];
+
+                new_frame[i][j] =useFilter(tmp);
+            }
+        }
+        /**
+        for(int i = 2; i < new_frame.length; i = i + 4){
+            tmp[0] = new_frame[i][0];
+            tmp[1] = new_frame[i][0];
+            tmp[2] = new_frame[i][0];
+            tmp[3] = new_frame[i][4];
+            tmp[4] = new_frame[i][8];
+            tmp[5] = new_frame[i][12];
+            for(int j = 2; j < new_frame.length; j = j + 4){
+                new_frame[i][j] =useFilter(tmp);
+                for(int k = 0; k < tmp.length-1; k++){
+                    tmp[k] = tmp[k+1];
+                }
+            }
+        }**/
+
         //TODO Implement for QP1
         //interpolate the horizontal quarter pixels
+
+        for(int i = 0; i < new_frame.length; i = i + 2){
+            for(int j = 1; j < new_frame.length; j = j + 2){
+                new_frame[i][j] = roundUpDivision(new_frame[i][j-1] + new_frame[i][j+1], 2);
+            }
+        }
 
         //TODO Implement for QP2
         //interpolate vertical quarter pixels
 
+        for(int i = 0; i < new_frame.length; i = i + 2){
+            for(int j = 1; j < new_frame.length; j = j + 2){
+                new_frame[j][i] = roundUpDivision(new_frame[j-1][i] + new_frame[j+1][i], 2);
+            }
+        }
+
         //TODO Implement for QP3
         //interpolate diagonal quarter pixels
 
+        for(int i = 1; i < new_frame.length; i = i + 2){
+            for(int j = 1; j < new_frame.length; j = j + 2){
+                new_frame[i][j] = roundUpDivision(new_frame[i][j-1] + new_frame[i][j+1], 2);
+            }
+        }
+
         return new_frame;
+    }
+
+    public static int roundUpDivision(int num, int denom) {
+        return (num + denom - 1) / denom;
     }
 
     /**
