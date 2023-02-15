@@ -7,6 +7,7 @@ import at.aau.itec.emmt.jpeg.stud.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 
 /**
@@ -29,8 +30,12 @@ public class JPEGTest {
 
     public static void main(String[] args) {
         try {
+            for(int i = 0; i < args.length; i++){
+                System.out.println(args[i]);
+            }
+
             if (args.length == 1 || args.length == 3 || args.length == 5) {
-                String imgFile = "./data/lena_122x123.png", samplingString = YUV_444;
+                String imgFile = "", samplingString = YUV_444;
                 int samplingRatio = SubSamplerI.YUV_444;
                 int qualityFactor = QuantizationI.DEFAULT_QUALITY_FACTOR;
                 // parse arguments
@@ -72,7 +77,7 @@ public class JPEGTest {
         MinimumCodedUnitI[] minCodedUnits = blockGenerator.generateMinimumCodedUnits(yuvImg);
         System.out.print("\nNr. of MCUs generated: " + minCodedUnits.length);
 
-        /**
+
         //Exercise 3
 
         DCTI dct = new StandardDCT();
@@ -102,6 +107,7 @@ public class JPEGTest {
                     BlockI quantBlock = quantizer.quantizeBlock(dctBlock, regions[j].getType());
                     showBlock(quantBlock, "Quantized block:");
 
+
                     //
                     // Exercise 4--
                     // --Exercise 34
@@ -109,18 +115,22 @@ public class JPEGTest {
                     showRunLevels(runLevels);
 
                     System.out.print("\n    -------------------------------");
+
                 }
+                break;
+
+
             }
+           break;
         }
-         */
     }
 
     private static int getSamplingRatio(String ratio) {
-        if (ratio.equals(YUV_444))
+        if (ratio.equalsIgnoreCase(YUV_444))
             return SubSamplerI.YUV_444;
-        else if (ratio.equals(YUV_422))
+        else if (ratio.equalsIgnoreCase(YUV_422))
             return SubSamplerI.YUV_422;
-        else if (ratio.equals(YUV_420))
+        else if (ratio.equalsIgnoreCase(YUV_420))
             return SubSamplerI.YUV_420;
         throw new IllegalArgumentException("Invalid subsampling ratio " + ratio + ".");
     }

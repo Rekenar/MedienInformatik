@@ -17,7 +17,8 @@ public interface QuantizationI {
     /**
      * The normative quantization matrix for luminance blocks.
      **/
-    static final int[] QUANTUM_LUMINANCE = {16, 11, 10, 16, 24, 40, 51, 61,
+    static final int[] QUANTUM_LUMINANCE = {
+            16, 11, 10, 16, 24, 40, 51, 61,
             12, 12, 14, 19, 26, 58, 60, 55,
             14, 13, 16, 24, 40, 57, 69, 56,
             14, 17, 22, 29, 51, 87, 80, 62,
@@ -29,7 +30,8 @@ public interface QuantizationI {
     /**
      * The normative quantization matrix for chrominance blocks.
      **/
-    static final int[] QUANTUM_CHROMINANCE = {17, 18, 24, 47, 99, 99, 99, 99,
+    static final int[] QUANTUM_CHROMINANCE = {
+            17, 18, 24, 47, 99, 99, 99, 99,
             18, 21, 26, 66, 99, 99, 99, 99,
             24, 26, 56, 99, 99, 99, 99, 99,
             47, 66, 99, 99, 99, 99, 99, 99,

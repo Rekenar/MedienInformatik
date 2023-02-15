@@ -3,8 +3,8 @@
 Sampling ratio: 4:4:4
 Size of the components: 
 Y: java.awt.Dimension[width=128,height=128]
-Cb: java.awt.Dimension[width=128,height=128]
-Cr: java.awt.Dimension[width=128,height=128]
+                                           Cb: java.awt.Dimension[width=128,height=128]
+                                           Cr: java.awt.Dimension[width=128,height=128]
 -------------------------------
 Y-Channel: 
 	218	196	197	194	195	193	191	193	193	197	200	
