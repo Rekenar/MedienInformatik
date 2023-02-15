@@ -71,8 +71,8 @@ public class MotionVector {
         //3. sequential search algorithm on rFrame to determine the motion vector
         //use MAD function as difference measure.
 
-        for(int i = -1*searchWindow/2-1; i<searchWindow/2-1; i++) {
-            for (int j = -1*searchWindow/2-1; j<searchWindow/2-1; j++) {
+        for(int i = -1*searchWindow/2; i<searchWindow/2; i++) {
+            for (int j = -1*searchWindow/2-1; j<searchWindow/2; j++) {
                 cur_MAD = MAD(tFrame, rFrame, i, j, rowIndex, colIndex);
                 if (cur_MAD < min_MAD) {
                     min_MAD = cur_MAD;
@@ -99,6 +99,7 @@ public class MotionVector {
      */
     private static double MAD(int[][] tBlock, int[][] rFrame, int i, int j, int rowIndex, int colIndex) {
         //TODO IMPLEMENT
+
         if(j+rowIndex < 0) return Double.MAX_VALUE;
         if(i+colIndex < 0) return Double.MAX_VALUE;
         double cur_MAD = 0.0;
