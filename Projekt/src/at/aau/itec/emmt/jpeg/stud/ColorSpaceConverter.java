@@ -20,30 +20,25 @@ public class ColorSpaceConverter implements ColorSpaceConverterI {
         int[][] v;
         BufferedImage bufferedImage = toBufferedImage(rgbImg);
 
+
         width = bufferedImage.getWidth();
         height = bufferedImage.getHeight();
         y = new int[height][width];
         u = new int[height][width];
         v = new int[height][width];
+
         int[] rgb = new int[3];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                int pixel  = bufferedImage.getRGB(i, j);
+                int pixel  = bufferedImage.getRGB(j, i);
                 Color color = new Color(pixel, true);
                 rgb[0] = color.getRed();
                 rgb[1] = color.getGreen();
                 rgb[2] = color.getBlue();
-                y[i][j] = (int)(0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]);
-                u[i][j] = (int)(128 - 0.1687 * rgb[0] - 0.3313 * rgb[1] + 0.5 * rgb[2]);
-                v[i][j] = (int)(128 + 0.5 * rgb[0] - 0.4187 * rgb[1] - 0.0813 * rgb[2]);
+                y[i][j] = (int) (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]);
+                u[i][j] = (int) (128 - 0.1687 * rgb[0] - 0.3313 * rgb[1] + 0.5 * rgb[2]);
+                v[i][j] = (int) (128 + 0.5 * rgb[0] - 0.4187 * rgb[1] - 0.0813 * rgb[2]);
             }
-        }
-
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                System.out.print(y[i][j] + " ");
-            }
-            System.out.println();
         }
 
 

@@ -5,58 +5,46 @@ import at.aau.itec.emmt.jpeg.impl.RunLevel;
 import at.aau.itec.emmt.jpeg.spec.BlockI;
 import at.aau.itec.emmt.jpeg.spec.RunLevelI;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class HuffmanCoder extends AbstractHuffmanCoder {
 
     @Override
     public RunLevelI[] runLengthEncode(BlockI quantBlock) {
 
-        int[] temp = new int[quantBlock.getData().length*quantBlock.getData()[0].length];
+        int[] zigzagArray = zigzagScan(quantBlock.getData());
+        List<RunLevel> runLevels = new ArrayList<>();
 
+
+        int runLength = 0;
+        for (int i = 1; i < zigzagArray.length; i++) {
+            if (zigzagArray[i] == 0) {
+                runLength++;
+            } else {
+                runLevels.add(new RunLevel(runLength, zigzagArray[i]));
+                runLength = 0;
+            }
+        }
+
+        // Add end-of-block marker
+        runLevels.add(new RunLevel(0, 0));
+        
+
+        RunLevel[] runLevel = runLevels.toArray(new RunLevel[runLevels.size()]);
+
+        return runLevel;
+    }
+
+    private int[] zigzagScan(int[][] array) {
+        int[] result = new int[array.length * array[0].length];
         int index = 0;
-
-        for(int i = 0; i < quantBlock.getData().length; i++){
-            for(int j = 0; j < quantBlock.getData()[0].length; j++){
-                temp[index++] = quantBlock.getData()[i][j];
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[0].length; j++) {
+                result[index++] = array[ZIGZAG_ORDER[i * 8 + j] / 8][ZIGZAG_ORDER[i * 8 + j] % 8];
             }
         }
-        int[] array = new int[temp.length];
-
-        for(int i = 0; i < temp.length; i++){
-            array[i] = temp[ZIGZAG_ORDER[i]];
-
-        }
-
-        int counter = 0;
-        for(int i = 0; i < array.length; i++){
-            if(array[i] != 0){
-                counter++;
-            }
-        }
-        RunLevel[] runLevels = new RunLevel[counter];
-
-        int run = 0;
-        counter = 0;
-        for(int i = 0; i < array.length+1; i++){
-            if(i == 0 && array[i] != 0){
-                continue;
-            }
-
-            if(counter == runLevels.length-1){
-                runLevels[counter] = new RunLevel(0,0);
-                break;
-            }
-
-            if(array[i] == 0){
-                run++;
-            }
-            else if(array[i] != 0){
-                runLevels[counter]= new RunLevel(run, array[i]);
-                counter++;
-                run = 0;
-            }
-
-        }
-
-        return runLevels;
+        return result;
     }
 }

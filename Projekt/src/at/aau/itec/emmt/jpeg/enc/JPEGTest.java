@@ -69,9 +69,12 @@ public class JPEGTest {
         ColorSpaceConverterI colorConverter = new ColorSpaceConverter();
         YUVImageI yuvImg = colorConverter.convertRGBToYUV(scaledImg);
 
+
         SubSamplerI subSampler = new SubSampler();
         yuvImg = subSampler.downSample(yuvImg, samplingRatio);
         showImageInfo(yuvImg, samplingString);
+
+
 
         BlockGeneratorI blockGenerator = new BlockGenerator();
         MinimumCodedUnitI[] minCodedUnits = blockGenerator.generateMinimumCodedUnits(yuvImg);
@@ -115,13 +118,12 @@ public class JPEGTest {
                     showRunLevels(runLevels);
 
                     System.out.print("\n    -------------------------------");
-
+                    break;
                 }
+
                 break;
-
-
             }
-           break;
+            break;
         }
     }
 

@@ -26,11 +26,11 @@ public class StandardDCT implements DCTI {
                     c2 = 1/Math.sqrt(2);
                 }
                 for(int i = 0; i < b.getData().length; i++){
-                    for(int j = 0; j < b.getData().length; j++){
+                    for(int j = 0; j < b.getData()[0].length; j++){
                         sum += ((b.getData()[j][i]-Math.pow(2, 8-1)) * Math.cos((((2 * i + 1) * u * Math.PI) / 16)) * Math.cos(((2 * j + 1) * v * Math.PI / (16))));
                     }
                 }
-                dctCoeffs[u][v] = ((c1*c2) / 4) * sum;
+                dctCoeffs[v][u] = ((c1*c2) / 4) * sum;
                 sum = 0;
             }
         }

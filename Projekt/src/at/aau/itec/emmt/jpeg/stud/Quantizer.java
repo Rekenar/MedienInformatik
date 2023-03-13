@@ -31,7 +31,8 @@ public class Quantizer implements QuantizationI {
     public BlockI quantizeBlock(DCTBlockI dctBlock, int compType) {
         int[][] quantizedBlock = new int[dctBlock.getData().length][dctBlock.getData()[0].length];
 
-        int qualityScaleFactor = 0;
+        int qualityScaleFactor;
+
         if(qualityFactor < 50){
             qualityScaleFactor = 5000 / qualityFactor;
         }else{
