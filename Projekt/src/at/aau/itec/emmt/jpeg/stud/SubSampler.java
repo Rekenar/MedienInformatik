@@ -35,6 +35,7 @@ public class SubSampler implements SubSamplerI {
             }
             return new YUVImage(new Component(y, YUVImageI.Y_COMP), new Component(u1, YUVImageI.CB_COMP), new Component(v1, YUVImageI.CR_COMP), samplingRatio);
         }
+
         else if (samplingRatio == 2){
             for (int i = 0; i < u2.length; i++) {
                 for (int j = 0; j < u2[i].length; j++) {

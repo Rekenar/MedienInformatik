@@ -20,7 +20,7 @@ public class StandardDCT implements DCTI {
             if(u == 0){
                 c1 = 1/Math.sqrt(2);
             }
-            for(int v = 0; v < dctCoeffs.length; v++){
+            for(int v = 0; v < dctCoeffs[0].length; v++){
                 c2 = 1;
                 if(v == 0){
                     c2 = 1/Math.sqrt(2);

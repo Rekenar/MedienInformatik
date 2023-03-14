@@ -13,7 +13,6 @@ public class HuffmanCoder extends AbstractHuffmanCoder {
 
     @Override
     public RunLevelI[] runLengthEncode(BlockI quantBlock) {
-
         int[] zigzagArray = zigzagScan(quantBlock.getData());
         List<RunLevel> runLevels = new ArrayList<>();
 
